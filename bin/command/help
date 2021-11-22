@@ -12,6 +12,7 @@ USAGE:
 
 COMMANDS:
   alias         Alias a version to a common name
+  completion    Generate shell completion code
   current       Print the current Lua version
   help          Prints this message
   install       Install a new Lua version

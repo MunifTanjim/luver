@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function luver_completion() {
+  local shell="${1:-}"
+
+  if test -z "${shell}"; then
+    echo "missing parameter: shell"
+    exit 1
+  fi
+
+  case "${shell}" in
+    zsh)
+      cat "${LUVER_SRC}/completions/_luver"
+      ;;
+    *)
+      echo "unsupported shell: ${shell}" >&2
+      exit 1
+      ;;
+  esac
+}
+
+luver_completion $@
