@@ -9,25 +9,40 @@ function luver_list() {
 
   local current_version="$(${LUVER_SRC}/bin/command/current)"
 
-  local version
-  for version_dir in ${LUVER_DIR}/lua-versions/*; do
-    version="$(basename "${version_dir}")"
-    map[${version}]=""
-  done
+  local version_dir version
+  if test -d "${LUVER_DIR}/lua-versions"; then
+    for version_dir in ${LUVER_DIR}/lua-versions/*; do
+      version="$(basename "${version_dir}")"
+      if test "${version}" = "*"; then
+        continue
+      fi
 
-  local version_alias
-  for alias_dir in ${LUVER_DIR}/aliases/*; do
-    version_alias="$(basename "${alias_dir}")"
-    version="$(basename $(realpath "${alias_dir}"))"
-    map[${version}]="${map[${version}]} ${version_alias}"
-  done
+      map[${version}]=""
+    done
+  fi
+
+  local alias_dir alias
+  if test -d "${LUVER_DIR}/aliases"; then
+    for alias_dir in ${LUVER_DIR}/aliases/*; do
+      alias="$(basename "${alias_dir}")"
+      if test "${alias}" = "*"; then
+        continue
+      fi
+
+      version="$(basename $(realpath "${alias_dir}"))"
+
+      map[${version}]="${map[${version}]} ${alias}"
+    done
+  fi
 
   local mark=""
   for version in $(printf '%s\n' ${!map[@]} | sort); do
     if test "${version}" = "${current_version}"; then
       mark=" *"
     fi
+
     echo "${version}${map[${version}]}${mark}"
+
     mark=""
   done
 }
