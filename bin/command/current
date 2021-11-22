@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function luver_current() {
+  local current_version=$(realpath "${LUVER_MULTISHELL_PATH}")
+  current_version="${current_version%/*}"
+  current_version="${current_version##*/}"
+  echo "${current_version}"
+}
+
+luver_current $@

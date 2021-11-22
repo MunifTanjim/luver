@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function _luver_help() {
+  cat << EOF
+luver
+version manager for Lua
+
+USAGE:
+  luver <COMMAND>
+
+COMMANDS:
+  alias         Alias a version to a common name
+  current       Print the current Lua version
+  help          Prints this message
+  install       Install a new Lua version
+  list          List all locally installed Lua versions
+  list-remote   List all remote Lua versions
+  unalias       Remove an alias definition
+  uninstall     Uninstall a Lua version
+  use           Change Lua version
+EOF
+}
+
+function luver_help() {
+  _luver_help
+}
+
+luver_help $@

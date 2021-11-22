@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "${LUVER_SRC}/bin/command/_utils.sh"
+
+set -x
+
+function luver_install() {
+  local -r version="${1}"
+
+  local major="0" minor="0" patch="0"
+  major="$(echo ${version} | cut -d. -f1)"
+  if test "${major}" != "${version}"; then
+    minor="$(echo ${version} | cut -d. -f2)"
+    if test "${major}.${minor}" != "${version}"; then
+      patch="$(echo ${version} | cut -d. -f3)"
+    fi
+  fi
+
+  if test "${major}" -le 2; then
+    echo "Unsupported version: ${version}"
+    exit 1
+  fi
+
+  local -r archive_url="$(luver_get_lua_archive_url "${version}")"
+  local -r archive_name="$(basename "${archive_url}")"
+
+  local -r temp_dir="$(mktemp --directory /tmp/luver-lua-${version}--XXXXXXXXX)"
+
+  pushd "${temp_dir}"
+
+  curl --progress-bar --continue-at - --output "${archive_name}" -L "${archive_url}"
+
+  tar -xzf "${archive_name}"
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${version}/installation"
+
+  if test "${major}" -eq 3; then
+    pushd "lua"
+  else
+    pushd "lua-${version}"
+  fi
+
+  if test "${major}" -eq 3; then
+    make
+    mkdir -p ${installation_dir}/{bin,include,lib,man/man1}
+    cp ./bin/{lua,luac} "${installation_dir}/bin/"
+    cp ./include/*.h "${installation_dir}/include/"
+    cp ./lib/*.a "${installation_dir}/lib/"
+
+    for bin in lua luac; do
+      if test -f "./doc/${bin}.man"; then
+        cp "./doc/${bin}.man" "${installation_dir}/man/man1/${bin}.1"
+      fi
+    done
+  elif test "${major}" -eq 4; then
+    make INSTALL_ROOT="${installation_dir}" install
+  elif test "${major}" -eq 5 && test "${minor}" -eq 0; then
+    make INSTALL_ROOT="${installation_dir}" install
+  else
+    local -r platform_target="$(luver_get_platform_target)"
+
+    if test -z "${platform_target}"; then
+      echo "Unsupported platform!"
+      exit 1
+    fi
+
+    make INSTALL_TOP="${installation_dir}" "${platform_target}" install
+  fi
+
+
+  popd
+
+  popd
+
+  rm -rf "${temp_dir}"
+}
+
+luver_install $@

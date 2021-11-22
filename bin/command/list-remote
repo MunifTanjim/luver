@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "${LUVER_SRC}/bin/command/_utils.sh"
+
+function luver_list-remote() {
+  local -r versions=($(luver_get_lua_versions))
+  for version in ${versions[@]}; do
+    echo "${version}"
+  done
+}
+
+luver_list-remote $@

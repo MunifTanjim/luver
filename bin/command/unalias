@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function luver_unalias() {
+  local -r version_alias="${1}"
+
+  rm -f ${LUVER_DIR}/aliases/${version_alias}
+}
+
+luver_unalias $@

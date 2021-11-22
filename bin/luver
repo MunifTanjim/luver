@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "${LUVER_SRC}/bin/command/_utils.sh"
+
+function luver() {
+  local -r cmd="${1:-}"
+
+  if test -z "${cmd}"; then
+    ${LUVER_SRC}/bin/command/help
+    exit 1
+  else
+    shift
+  fi
+
+  if ! test -f ${LUVER_SRC}/bin/command/${cmd}; then
+    echo "unknown command: ${cmd}"
+    echo
+    ${LUVER_SRC}/bin/command/help
+    exit 1
+  fi
+
+  ${LUVER_SRC}/bin/command/${cmd} $@
+}
+
+luver $@

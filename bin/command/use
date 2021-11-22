@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+declare -r lua_version="${1}"
+
+if test -d ${LUVER_DIR}/lua-versions/${lua_version}; then
+  rm -f ${LUVER_MULTISHELL_PATH}
+  ln -s ${LUVER_DIR}/lua-versions/${lua_version}/installation ${LUVER_MULTISHELL_PATH}
+elif test -d ${LUVER_DIR}/aliases/${lua_version}; then
+  rm -f ${LUVER_MULTISHELL_PATH}
+  ln -s ${LUVER_DIR}/aliases/${lua_version}/installation ${LUVER_MULTISHELL_PATH}
+else
+  echo "${lua_version} not found!"
+  exit 1
+fi
