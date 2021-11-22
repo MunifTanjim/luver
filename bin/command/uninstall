@@ -3,9 +3,26 @@
 set -euo pipefail
 
 function luver_uninstall() {
-  local -r version="${1}"
+  local -r target_version="${1}"
 
-  rm -f ${LUVER_DIR}/lua-versions/${version}
+  rm -rf ${LUVER_DIR}/lua-versions/${target_version}
+
+  if test -d "${LUVER_DIR}/aliases"; then
+    local alias_dir alias version
+
+    for alias_dir in ${LUVER_DIR}/aliases/*; do
+      alias="$(basename "${alias_dir}")"
+      if test "${alias}" = "*"; then
+        continue
+      fi
+
+      version="$(basename $(realpath "${alias_dir}"))"
+
+      if test "${version}" = "${target_version}"; then
+        ${LUVER_SRC}/bin/command/unalias "${alias}"
+      fi
+    done
+  fi
 }
 
 luver_uninstall $@
