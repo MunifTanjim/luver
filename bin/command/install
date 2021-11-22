@@ -4,8 +4,6 @@ set -euo pipefail
 
 source "${LUVER_SRC}/bin/command/_utils.sh"
 
-set -x
-
 function luver_install() {
   local -r version="${1}"
 
