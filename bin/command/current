@@ -3,9 +3,14 @@
 set -euo pipefail
 
 function luver_current() {
+  if ! test -d "${LUVER_MULTISHELL_PATH}"; then
+    exit 1
+  fi
+
   local current_version=$(realpath "${LUVER_MULTISHELL_PATH}")
   current_version="${current_version%/*}"
   current_version="${current_version##*/}"
+
   echo "${current_version}"
 }
 
