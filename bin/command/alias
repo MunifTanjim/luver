@@ -5,8 +5,8 @@ set -euo pipefail
 source "${LUVER_SRC}/bin/command/_utils.sh"
 
 function luver_alias() {
-  local -r version_alias="${1}"
-  local -r version="${2}"
+  local -r version="${1}"
+  local -r alias="${2}"
 
   if ! test -d "${LUVER_DIR}/aliases"; then
     mkdir -p "${LUVER_DIR}/aliases"
@@ -17,9 +17,9 @@ function luver_alias() {
     exit 1
   fi
 
-  rm -f ${LUVER_DIR}/aliases/${version_alias}
+  rm -f ${LUVER_DIR}/aliases/${alias}
 
-  ln -s ${LUVER_DIR}/lua-versions/${version} ${LUVER_DIR}/aliases/${version_alias}
+  ln -s ${LUVER_DIR}/lua-versions/${version} ${LUVER_DIR}/aliases/${alias}
 }
 
 luver_alias $@

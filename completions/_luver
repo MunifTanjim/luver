@@ -41,14 +41,14 @@ case "${state}" in
     case "${cmd}" in
       alias)
         if [[ -z "${words[3]}" ]]; then
-          ret=0
-        else
           typeset -a versions
           versions=("${LUVER_DIR}/lua-versions"/*(N:t))
 
           _alternative \
             'versions:versions:compadd -a - versions' \
            && ret=0
+        else
+          ret=0
         fi
         ;;
 
@@ -74,7 +74,6 @@ case "${state}" in
         if [[ -z "$cache_policy" ]]; then
             zstyle ":completion:${curcontext}:" cache-policy __luver_caching_policy
         fi
-
 
         local -a list
         local cachename="_luver_lua_versions"
