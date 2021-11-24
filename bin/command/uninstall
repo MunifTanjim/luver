@@ -2,15 +2,15 @@
 
 set -euo pipefail
 
-function luver_uninstall() {
-  local -r target_version="${1}"
+function luver_uninstall_lua() {
+  local target_version="${1}"
 
   rm -rf ${LUVER_DIR}/lua-versions/${target_version}
 
-  if test -d "${LUVER_DIR}/aliases"; then
+  if test -d "${LUVER_DIR}/lua-aliases"; then
     local alias_dir alias version
 
-    for alias_dir in ${LUVER_DIR}/aliases/*; do
+    for alias_dir in ${LUVER_DIR}/lua-aliases/*; do
       alias="$(basename "${alias_dir}")"
       if test "${alias}" = "*"; then
         continue
@@ -23,6 +23,16 @@ function luver_uninstall() {
       fi
     done
   fi
+}
+
+function luver_uninstall() {
+  local tool="lua"
+  if [[ " lua luarocks " = *" ${1:-} "* ]]; then
+    tool="${1}"
+    shift
+  fi
+
+  luver_uninstall_${tool} $@
 }
 
 luver_uninstall $@
