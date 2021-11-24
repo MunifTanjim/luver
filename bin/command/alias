@@ -2,24 +2,22 @@
 
 set -euo pipefail
 
-source "${LUVER_SRC}/bin/command/_utils.sh"
-
 function luver_alias() {
   local -r version="${1}"
   local -r alias="${2}"
 
-  if ! test -d "${LUVER_DIR}/aliases"; then
-    mkdir -p "${LUVER_DIR}/aliases"
+  if ! test -d "${LUVER_DIR}/lua-aliases"; then
+    mkdir -p "${LUVER_DIR}/lua-aliases"
   fi
 
-  if ! luver_is_version_installed "${version}"; then
-    echo "${version} is not installed!"
+  if ! test -d "${LUVER_DIR}/lua-versions/${version}"; then
+    echo "lua v${version} is not installed!"
     exit 1
   fi
 
-  rm -f ${LUVER_DIR}/aliases/${alias}
+  rm -f ${LUVER_DIR}/lua-aliases/${alias}
 
-  ln -s ${LUVER_DIR}/lua-versions/${version} ${LUVER_DIR}/aliases/${alias}
+  ln -s ${LUVER_DIR}/lua-versions/${version} ${LUVER_DIR}/lua-aliases/${alias}
 }
 
 luver_alias $@
