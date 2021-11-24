@@ -2,13 +2,21 @@
 
 set -euo pipefail
 
-source "${LUVER_SRC}/bin/command/_utils.sh"
-
 function luver_list-remote() {
-  local -r versions=($(luver_get_lua_versions))
-  for version in ${versions[@]}; do
-    echo "${version}"
-  done
+  local tool="${1:-"lua"}"
+  if [[ " lua luarocks " != *" ${tool} "* ]]; then
+    echo "unsupported tool: ${tool}"
+    exit 1
+  fi
+
+  case "${tool}" in
+    lua)
+      local -ar versions=($(curl -fSsL https://www.lua.org/ftp | sed -n "s/.*>lua-\(.*\..*\).tar.gz<.*/\1/p" | sort))
+      for version in ${versions[@]}; do
+        echo "${version}"
+      done
+      ;;
+  esac
 }
 
 luver_list-remote $@
