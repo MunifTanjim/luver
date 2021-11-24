@@ -6,93 +6,228 @@ __luver_caching_policy() {
   (( ${#oldp} ))
 }
 
+__luver_tools() {
+  local -a _luver_tools
+  _luver_tools=("lua")
+  _describe -t tools "tools" _luver_tools
+}
+
+__luver_install_versions() {
+  integer ret=1
+
+  if ! zstyle -t ":completion:${curcontext%:*}:" cache-policy; then
+    zstyle ":completion:${curcontext%:*}:" cache-policy __luver_caching_policy
+  fi
+
+  if ! zstyle -t ":completion:${curcontext%:*:*}:*:versions" sort; then
+    zstyle ":completion:${curcontext%:*:*}:*:versions" sort reverse
+  fi
+
+  case "${words[2]}" in
+    lua)
+      local cachename="_luver_lua_versions"
+
+      if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
+        && ! _retrieve_cache "${cachename#_}"; then
+          _message "fetching lua versions..."
+          _luver_lua_versions=( $(luver list-remote lua) )
+          _store_cache ${cachename#_} _luver_lua_versions
+      fi
+
+      _describe -t versions "${words[2]} versions" _luver_lua_versions \
+         && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
 __luver_arguments() {
-  local cache_policy expl
   integer ret=1
 
   case "${words[1]}" in
     alias)
-      if [[ -z "${words[2]}" ]]; then
-        typeset -a versions
-        versions=("${LUVER_DIR}/lua-versions"/*(N:t))
+      local curcontext="${curcontext}" state
 
-        _alternative \
-          'versions:versions:compadd -a - versions' \
-         && ret=0
-      else
-        ret=0
-      fi
+      _arguments \
+        '1: :->version' \
+        '2: :->alias' \
+        && ret=0
+
+      case "${state}" in
+        version)
+          local -a versions
+          versions=("${LUVER_DIR}/lua-versions"/*(N:t))
+
+          _describe -t versions "lua versions" versions \
+             && ret=0
+          ;;
+        alias)
+          _message "Enter alias name for lua v${words[2]}" && ret=0
+          ;;
+      esac
       ;;
 
     completion)
-        typeset -a shells
-        shells=("zsh")
+      _arguments \
+        '1: :->shell' \
+        && ret=0
 
-        _alternative \
-          'shells:shells:compadd -a - shells' \
-         && ret=0
+      case "${state}" in
+        shell)
+          local -a shells
+          shells=("zsh")
+
+          _describe -t luver-completion-shells "shells" shells \
+             && ret=0
+          ;;
+      esac
       ;;
+
     current)
-      _message "Hit enter to get the current Lua version" && ret=0
+      local curcontext="${curcontext}" state
+
+      _arguments \
+        '1: :->tool' \
+        && ret=0
+
+      case "${state}" in
+        tool)
+          __luver_tools && ret=0
+          ;;
+      esac
       ;;
 
     help)
-      _message "Hit enter to get usage information" && ret=0
+      local curcontext="${curcontext}" state
+
+      _arguments \
+        '1:: :->command' \
+        && ret=0
+
+      case "${state}" in
+        command)
+          local -a commands
+          commands=($(luver help | sed '1,/COMMANDS:/d' | sed '/^$/,$d' | sed 's/^  //' | cut -d' ' -f1))
+
+          _describe -t luver-help-commands "commands" commands \
+            && ret=0
+          ;;
+      esac
       ;;
 
     install)
-      zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
-      if [[ -z "${cache_policy}" ]]; then
-        zstyle ":completion:${curcontext}:" cache-policy __luver_caching_policy
-      fi
+      local curcontext="${curcontext}" state
 
-      local -a list
-      local cachename="_luver_lua_versions"
-      if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid ${cachename#_}) \
-        && ! _retrieve_cache ${cachename#_}; then
-          list=( $(luver list-remote) )
-          _store_cache ${cachename#_} list
-      fi
-      _wanted list expl 'available versions' compadd -a list
+      _arguments \
+        '1: :->tool' \
+        '2: :->version' \
+        && ret=0
+
+      case "${state}" in
+        tool)
+          __luver_tools && ret=0
+          ;;
+        version)
+          curcontext="${curcontext%:*}:${words[2]}:"
+          __luver_install_versions && ret=0
+          ;;
+      esac
       ;;
 
     list)
-      _message "Hit enter to list all installed Lua versions" && ret=0
+      local curcontext="${curcontext}" state
+
+      _arguments \
+        '1: :->tool' \
+        && ret=0
+
+      case "${state}" in
+        tool)
+          __luver_tools && ret=0
+          ;;
+      esac
       ;;
 
     list-remote)
-      _message "Hit enter to list all remote Lua versions" && ret=0
+      local curcontext="${curcontext}" state
+
+      _arguments \
+        '1: :->tool' \
+        && ret=0
+
+      case "${state}" in
+        tool)
+          __luver_tools && ret=0
+          ;;
+      esac
       ;;
 
     unalias)
-      local -a aliases
-      aliases=("${LUVER_DIR}/aliases"/*(N:t))
+      local curcontext="${curcontext}" state
 
-      _alternative \
-        'aliases:aliases:compadd -a - aliases' \
+      _arguments \
+        '1: :->alias' \
         && ret=0
+
+      case "${state}" in
+        alias)
+          local -a aliases
+          aliases=("${LUVER_DIR}/lua-aliases"/*(N:t))
+
+          _describe -t aliases "${words[2]} aliases" aliases \
+             && ret=0
+          ;;
+      esac
       ;;
 
     uninstall)
-      local -a versions
-      versions=("${LUVER_DIR}/lua-versions"/*(N:t))
+      local curcontext="${curcontext}" state
 
-      _alternative \
-        'versions:versions:compadd -a - versions' \
+      _arguments \
+        '1: :->tool' \
+        '2: :->version' \
         && ret=0
+
+      case "${state}" in
+        tool)
+          __luver_tools && ret=0
+          ;;
+        version)
+          case "${words[2]}" in
+            lua)
+              local -a versions
+              versions=("${LUVER_DIR}/${words[2]}-versions"/*(N:t))
+
+              _describe -t versions "${words[2]} versions" versions \
+                 && ret=0
+              ;;
+          esac
+          ;;
+      esac
       ;;
 
     use)
-      local -a aliases
-      aliases=("${LUVER_DIR}/aliases"/*(N:t))
+      local curcontext="${curcontext}" state
 
-      local -a versions
-      versions=("${LUVER_DIR}/lua-versions"/*(N:t))
-
-      _alternative \
-        'aliases:aliases:compadd -a - aliases' \
-        'versions:versions:compadd -a - versions' \
+      _arguments \
+        '1: :->version' \
         && ret=0
+
+      case "${state}" in
+        version)
+          local -a aliases
+          aliases=("${LUVER_DIR}/lua-aliases"/*(N:t))
+
+          local -a versions
+          versions=("${LUVER_DIR}/lua-versions"/*(N:t))
+
+          _alternative \
+            "aliases:${words[2]} aliases:compadd -a - aliases" \
+            "versions:${words[2]} versions:compadd -a - versions" \
+            && ret=0
+          ;;
+      esac
       ;;
   esac
 
@@ -100,31 +235,21 @@ __luver_arguments() {
 }
 
 __luver_commands() {
-  local -a _luver_commands=(
-    alias:'Alias a version to a common name'
-    completion:'Generate shell completion code'
-    current:'Print the current Lua version'
-    help:'Print usage information'
-    install:'Install a new Lua version'
-    list:'List all locally installed Lua versions'
-    list-remote:'List all remote Lua versions'
-    unalias:'Remove an alias definition'
-    uninstall:'Uninstall a Lua version'
-    use:'Change Lua version'
-  )
+  local -a _luver_commands
+  _luver_commands=(${(f)"$(luver help | sed '1,/COMMANDS:/d' | sed '/^$/,$d' | sed 's/^  //' | sed 's/^\([^ ]*\) */\1:/g')"})
 
-  _describe -t luver-commands "luver command" _luver_commands
+  _describe -t luver-commands "commands" _luver_commands
 }
 
 _luver() {
   setopt localoptions typesetsilent
 
-  local context curcontext="$curcontext" state state_descr line
+  local context curcontext="${curcontext}" state state_descr line
   local -A opt_args
   integer ret=1
 
   _arguments -C \
-    '1: :->command'\
+    '1: :->command' \
     '*:: :->argument' \
     && ret=0
 
