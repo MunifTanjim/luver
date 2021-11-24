@@ -71,6 +71,60 @@ function luver_install_lua() {
   rm -rf "${temp_dir}"
 }
 
+function luver_install_luajit() {
+  local major minor patch prerelease
+
+  local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  parse_version "${lua_version}"
+  if test "${major}" -lt 5; then
+    echo "incompatible lua v${lua_version}"
+    exit 1
+  fi
+
+  local current_luajit_version="$(${LUVER_SRC}/bin/command/current luajit)"
+
+  if ! test -z "${current_luajit_version}"; then
+    echo "luajit v${current_luajit_version} is already installed, uninstall it first."
+    exit 1
+  fi
+
+  local -r version="${1}"
+  parse_version "${version}"
+
+  pushd "${LUVER_DIR}/.downloads/luajit"
+
+  local -r git_tag="v${version}"
+
+  if test -z "$(git tag --list "${git_tag}")"; then
+    echo "invalid version: ${version}"
+    exit 1
+  fi
+
+  git checkout "${git_tag}"
+
+  local -r platform_target="$(luver_get_platform_target)"
+
+  local MACOSX_DEPLOYMENT_TARGET=""
+  if test "${platform_target}" = "macosx"; then
+    MACOSX_DEPLOYMENT_TARGET="MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
+  fi
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  make ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}"
+  make ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}" install
+
+  ln -sf ${installation_dir}/bin/luajit-${version} ${installation_dir}/bin/luajit
+
+  popd
+}
+
 function luver_install_luarocks() {
   local -r version="${1}"
 
@@ -120,7 +174,7 @@ function luver_install_luarocks() {
 
 function luver_install() {
   local tool="lua"
-  if [[ " lua luarocks " = *" ${1:-} "* ]]; then
+  if [[ " lua luajit luarocks " = *" ${1:-} "* ]]; then
     tool="${1}"
     shift
   fi
