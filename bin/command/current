@@ -2,16 +2,26 @@
 
 set -euo pipefail
 
-function luver_current() {
-  if ! test -d "${LUVER_MULTISHELL_PATH}"; then
+function luver_current_lua() {
+  if ! test -d "${LUVER_CURRENT_DIR}"; then
     exit 1
   fi
 
-  local current_version=$(realpath "${LUVER_MULTISHELL_PATH}")
+  local current_version=$(realpath "${LUVER_CURRENT_DIR}")
   current_version="${current_version%/*}"
   current_version="${current_version##*/}"
 
   echo "${current_version}"
+}
+
+function luver_current() {
+  local tool="${1:-"lua"}"
+  if [[ " lua luarocks " != *" ${tool} "* ]]; then
+    echo "unsupported tool: ${tool}"
+    exit 1
+  fi
+
+  luver_current_${tool} $@
 }
 
 luver_current $@
