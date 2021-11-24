@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-source "${LUVER_SRC}/bin/command/_utils.sh"
-
 function luver() {
   local -r cmd="${1:-}"
 
