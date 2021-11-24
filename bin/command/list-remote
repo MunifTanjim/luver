@@ -14,7 +14,13 @@ function luver_list-remote_luajit() {
 
   pushd "${repo_path}" >/dev/null
 
-  local -ar git_tags=($(git tag))
+  local -a git_tags=($(git tag))
+
+  local -r branch_v2_0="$(printf '%s\n' "${git_tags[@]}" | grep v2.0 | sort | tail -1 | cut -d'-' -f1)-git"
+  local -r branch_v2_1="$(printf '%s\n' "${git_tags[@]}" | grep v2.1 | sort | tail -1 | cut -d'-' -f1)-git"
+  git_tags=(${git_tags[@]} "${branch_v2_0}" "${branch_v2_1}")
+
+  git_tags=($(printf '%s\n' "${git_tags[@]}" | sort))
 
   for git_tag in ${git_tags[@]}; do
     echo "${git_tag#v}"
