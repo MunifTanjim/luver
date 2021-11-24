@@ -112,7 +112,7 @@ function _luver_help_uninstall() {
 ${short_desc[uninstall]}
 
 USAGE:
-  luver uninstall [tool] <version>
+  luver uninstall [tool] [version]
 
 ${tools_section}
 EOF
@@ -154,7 +154,8 @@ function luver_help() {
   short_desc[use]="Change current version"
 
   local -r tools_section="TOOLS:
-  lua"
+  lua
+  luarocks"
 
   local command="${1:-}"
 
