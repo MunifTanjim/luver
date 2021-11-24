@@ -38,6 +38,14 @@ __luver_install_versions() {
          && ret=0
       ;;
 
+    luajit)
+      local -a _luver_luajit_versions
+      _luver_luajit_versions=( $(luver list-remote luajit) )
+
+      _describe -t versions "${words[2]} versions" _luver_luajit_versions \
+         && ret=0
+      ;;
+
     luarocks)
       local cachename="_luver_luarocks_versions"
 
