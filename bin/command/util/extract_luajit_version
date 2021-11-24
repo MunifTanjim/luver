@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+function extract_luajit_version() {
+  local -r lua_version="${1}"
+
+  if test -z "${lua_version}"; then
+    exit 1
+  fi
+
+  local -r luajit="${LUVER_DIR}/lua-versions/${lua_version}/installation/bin/luajit"
+  if ! test -f "${luajit}"; then
+    exit 1
+  fi
+
+  ${luajit} -v | head -1 |  sed 's/.* \(\([0-9]\.\)\{1,2\}\([0-9]\)\{0,1\}\(-[a-z0-9]*\)\{0,2\}\).*/\1/'
+}

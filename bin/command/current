@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+source ${LUVER_SRC}/bin/command/util/extract_luajit_version
 source ${LUVER_SRC}/bin/command/util/extract_luarocks_version
 
 function luver_current_lua() {
@@ -16,6 +17,11 @@ function luver_current_lua() {
   echo "${current_version}"
 }
 
+function luver_current_luajit() {
+  local -r lua_version="$(luver_current_lua)"
+  extract_luajit_version "${lua_version}"
+}
+
 function luver_current_luarocks() {
   local -r lua_version="$(luver_current_lua)"
   extract_luarocks_version "${lua_version}"
@@ -23,7 +29,7 @@ function luver_current_luarocks() {
 
 function luver_current() {
   local tool="${1:-"lua"}"
-  if [[ " lua luarocks " != *" ${tool} "* ]]; then
+  if [[ " lua luajit luarocks " != *" ${tool} "* ]]; then
     echo "unsupported tool: ${tool}"
     exit 1
   fi
