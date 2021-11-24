@@ -48,18 +48,31 @@ function luver_uninstall_luajit() {
 
   pushd "${LUVER_DIR}/.downloads/luajit"
 
-  local -r git_tag="v${target_version}"
+  local git_ref="v${target_version}"
+  local is_git_ref_branch=false
 
-  if test -z "$(git tag --list "${git_tag}")"; then
+  if test "${prerelease}" = "-git"; then
+    git_ref="v${major}.${minor}"
+    is_git_ref_branch=true
+  fi
+
+  if ! git show-ref --quiet "${git_ref}"; then
     echo "invalid version: ${target_version}"
     exit 1
   fi
 
-  git checkout "${git_tag}"
+  git fetch origin
+
+  git checkout "${git_ref}"
+
+  local VERSION_OVERRIDE=""
+  if test ${is_git_ref_branch} = true; then
+    VERSION_OVERRIDE="PREREL=-git"
+  fi
 
   local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
 
-  make PREFIX="${installation_dir}" uninstall
+  make ${VERSION_OVERRIDE} PREFIX="${installation_dir}" uninstall
 
   popd
 }
