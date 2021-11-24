@@ -2,11 +2,6 @@ function luver_get_lua_versions() {
   curl -fSsL https://www.lua.org/ftp | sed -n "s/.*>lua-\(.*\..*\).tar.gz<.*/\1/p" | sort
 }
 
-function luver_is_version_installed() {
-  local -r version="${1}"
-  test -d "${LUVER_DIR}/lua-versions/${version}"
-}
-
 function luver_list_version() {
   if test -d "${LUVER_DIR}/lua-versions"; then
     local version_dir version
