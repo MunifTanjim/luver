@@ -3,9 +3,9 @@
 set -euo pipefail
 
 function luver_unalias() {
-  local -r version_alias="${1}"
+  local -r alias="${1}"
 
-  rm -f ${LUVER_DIR}/aliases/${version_alias}
+  rm -f ${LUVER_DIR}/lua-aliases/${alias}
 }
 
 luver_unalias $@
