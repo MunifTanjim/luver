@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+source ${LUVER_SRC}/bin/command/util/extract_luarocks_version
+
 function luver_list_lua_version() {
   local tool="${1}"
 
@@ -55,6 +57,30 @@ function luver_list_lua() {
     alias="$(echo ${aliasmap} | cut -d: -f1)"
     version="$(echo ${aliasmap} | cut -d: -f2)"
     map[${version}]="${map[${version}]} ${alias}"
+  done
+
+  local mark=""
+  for version in $(printf '%s\n' ${!map[@]} | sort); do
+    if test "${version}" = "${current_version}"; then
+      mark=" *"
+    fi
+
+    echo "${version}${map[${version}]}${mark}"
+
+    mark=""
+  done
+}
+
+function luver_list_luarocks() {
+  local -A map
+
+  local current_version="$(${LUVER_SRC}/bin/command/current luarocks)"
+
+  for lua_version in $(luver_list_lua_version lua); do
+    local version="$(extract_luarocks_version "${lua_version}")"
+    if ! test -z "${version}"; then
+      map[${version}]=" [lua:${lua_version}]"
+    fi
   done
 
   local mark=""
