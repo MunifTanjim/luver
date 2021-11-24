@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+function parse_version() {
+  local -r version="${1}"
+
+  major="0" minor="0" patch="0" prerelease=""
+  major="$(echo ${version} | cut -d. -f1)"
+  if test "${major}" != "${version}"; then
+    minor="$(echo ${version} | cut -d. -f2)"
+    if test "${major}.${minor}" != "${version}"; then
+      patch="$(echo ${version} | cut -d. -f3)"
+      prerelease="$(echo "${patch}" | sed 's/^[0-9]*//')"
+      patch="${patch%${prerelease}}"
+    fi
+  fi
+}
