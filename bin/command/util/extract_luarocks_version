@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+function extract_luarocks_version() {
+  local -r lua_version="${1}"
+
+  if test -z "${lua_version}"; then
+    exit 1
+  fi
+
+  local -r luarocks="${LUVER_DIR}/lua-versions/${lua_version}/installation/bin/luarocks"
+  if ! test -f "${luarocks}"; then
+    exit 1
+  fi
+
+  ${luarocks} --version | head -1 |  sed 's/.* \(\([0-9]\.\)\{1,2\}\([0-9]\)\{0,1\}\).*/\1/'
+}

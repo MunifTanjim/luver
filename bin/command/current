@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+source ${LUVER_SRC}/bin/command/util/extract_luarocks_version
+
 function luver_current_lua() {
   if ! test -d "${LUVER_CURRENT_DIR}"; then
     exit 1
@@ -12,6 +14,11 @@ function luver_current_lua() {
   current_version="${current_version##*/}"
 
   echo "${current_version}"
+}
+
+function luver_current_luarocks() {
+  local -r lua_version="$(luver_current_lua)"
+  extract_luarocks_version "${lua_version}"
 }
 
 function luver_current() {
