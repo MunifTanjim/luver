@@ -16,6 +16,12 @@ function luver_list-remote() {
         echo "${version}"
       done
       ;;
+    luarocks)
+      local -ar versions=($(curl -fSsL http://luarocks.github.io/luarocks/releases | sed -n "s/.*>luarocks-\(.*\..*\).tar.gz<.*/\1/p" | sort))
+      for version in ${versions[@]}; do
+        echo "${version}"
+      done
+      ;;
   esac
 }
 
