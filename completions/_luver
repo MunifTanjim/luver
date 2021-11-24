@@ -8,7 +8,7 @@ __luver_caching_policy() {
 
 __luver_tools() {
   local -a _luver_tools
-  _luver_tools=("lua" "luarocks")
+  _luver_tools=("lua" "luajit" "luarocks")
   _describe -t tools "tools" _luver_tools
 }
 

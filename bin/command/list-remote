@@ -2,9 +2,30 @@
 
 set -euo pipefail
 
+function luver_list-remote_luajit() {
+  local -r git_repo="https://github.com/LuaJIT/LuaJIT.git"
+  local -r repo_path="${LUVER_DIR}/.downloads/luajit"
+
+  if test -d "${repo_path}"; then
+    git -C "${repo_path}" fetch --quiet origin
+  else
+    git clone --silent "${git_repo}" "${repo_path}"
+  fi
+
+  pushd "${repo_path}" >/dev/null
+
+  local -ar git_tags=($(git tag))
+
+  for git_tag in ${git_tags[@]}; do
+    echo "${git_tag#v}"
+  done
+
+  popd >/dev/null
+}
+
 function luver_list-remote() {
   local tool="${1:-"lua"}"
-  if [[ " lua luarocks " != *" ${tool} "* ]]; then
+  if [[ " lua luajit luarocks " != *" ${tool} "* ]]; then
     echo "unsupported tool: ${tool}"
     exit 1
   fi
@@ -15,6 +36,9 @@ function luver_list-remote() {
       for version in ${versions[@]}; do
         echo "${version}"
       done
+      ;;
+    luajit)
+      luver_list-remote_luajit
       ;;
     luarocks)
       local -ar versions=($(curl -fSsL http://luarocks.github.io/luarocks/releases | sed -n "s/.*>luarocks-\(.*\..*\).tar.gz<.*/\1/p" | sort))
