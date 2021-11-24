@@ -99,16 +99,29 @@ function luver_install_luajit() {
 
   pushd "${LUVER_DIR}/.downloads/luajit"
 
-  local -r git_tag="v${version}"
+  local git_ref="v${version}"
+  local is_git_ref_branch=false
 
-  if test -z "$(git tag --list "${git_tag}")"; then
+  if test "${prerelease}" = "-git"; then
+    git_ref="v${major}.${minor}"
+    is_git_ref_branch=true
+  fi
+
+  if ! git show-ref --quiet "${git_ref}"; then
     echo "invalid version: ${version}"
     exit 1
   fi
 
-  git checkout "${git_tag}"
+  git fetch origin
+
+  git checkout "${git_ref}"
 
   local -r platform_target="$(luver_get_platform_target)"
+
+  local VERSION_OVERRIDE=""
+  if test ${is_git_ref_branch} = true; then
+    VERSION_OVERRIDE="PREREL=-git"
+  fi
 
   local MACOSX_DEPLOYMENT_TARGET=""
   if test "${platform_target}" = "macosx"; then
@@ -117,8 +130,8 @@ function luver_install_luajit() {
 
   local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
 
-  make ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}"
-  make ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}" install
+  make ${VERSION_OVERRIDE} ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}"
+  make ${VERSION_OVERRIDE} ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}" install
 
   ln -sf ${installation_dir}/bin/luajit-${version} ${installation_dir}/bin/luajit
 
