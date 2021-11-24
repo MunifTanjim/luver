@@ -2,30 +2,163 @@
 
 set -euo pipefail
 
-function _luver_help() {
+function _luver_help_() {
   cat << EOF
 luver
 version manager for Lua
 
 USAGE:
-  luver <COMMAND>
+  luver <command>
 
 COMMANDS:
-  alias         Alias a version to a common name
-  completion    Generate shell completion code
-  current       Print the current Lua version
-  help          Prints this message
-  install       Install a new Lua version
-  list          List all locally installed Lua versions
-  list-remote   List all remote Lua versions
-  unalias       Remove an alias definition
-  uninstall     Uninstall a Lua version
-  use           Change Lua version
+EOF
+
+for command in ${commands[@]}; do
+  printf "  %-12s  %s\n" "${command}" "${short_desc[${command}]}"
+done
+}
+
+function _luver_help_alias() {
+  cat << EOF
+${short_desc[alias]}
+
+USAGE:
+  luver alias <version> <alias>
+EOF
+}
+
+function _luver_help_completion() {
+  cat << EOF
+${short_desc[completion]}
+
+USAGE:
+  luver completion [shell]
+
+SHELLS:
+  zsh
+EOF
+}
+
+function _luver_help_current() {
+  cat << EOF
+${short_desc[current]}
+
+USAGE:
+  luver current [tool]
+
+${tools_section}
+EOF
+}
+
+function _luver_help_help() {
+  cat << EOF
+${short_desc[help]}
+
+USAGE:
+  luver help [command]
+
+COMMANDS:
+EOF
+
+for command in ${commands[@]}; do
+  printf "  %-12s\n" "${command}"
+done
+}
+
+function _luver_help_install() {
+  cat << EOF
+${short_desc[install]}
+
+USAGE:
+  luver install [tool] <version>
+
+${tools_section}
+EOF
+}
+
+function _luver_help_list() {
+  cat << EOF
+${short_desc[list]}
+
+USAGE:
+  luver list [tool]
+
+${tools_section}
+EOF
+}
+
+function _luver_help_list-remote() {
+  cat << EOF
+${short_desc[list-remote]}
+
+USAGE:
+  luver list-remote [tool]
+
+${tools_section}
+EOF
+}
+
+function _luver_help_unalias() {
+  cat << EOF
+${short_desc[unalias]}
+
+USAGE:
+  luver unalias <alias>
+EOF
+}
+
+function _luver_help_uninstall() {
+  cat << EOF
+${short_desc[uninstall]}
+
+USAGE:
+  luver uninstall [tool] <version>
+
+${tools_section}
+EOF
+}
+
+function _luver_help_use() {
+  cat << EOF
+${short_desc[use]}
+
+USAGE:
+  luver use <version|alias>
 EOF
 }
 
 function luver_help() {
-  _luver_help
+  local -a commands=(
+    alias
+    completion
+    current
+    help
+    install
+    list
+    list-remote
+    unalias
+    uninstall
+    use
+  )
+
+  local -A short_desc
+  short_desc[alias]="Create a version alias"
+  short_desc[completion]="Generate shell completion code"
+  short_desc[current]="Get the current version"
+  short_desc[help]="Get usage information"
+  short_desc[install]="Install a new version"
+  short_desc[list]="List installed versions"
+  short_desc[list-remote]="List all remote versions"
+  short_desc[unalias]="Remove a version alias"
+  short_desc[uninstall]="Uninstall a version"
+  short_desc[use]="Change current version"
+
+  local -r tools_section="TOOLS:
+  lua"
+
+  local command="${1:-}"
+
+  _luver_help_${command}
 }
 
 luver_help $@
