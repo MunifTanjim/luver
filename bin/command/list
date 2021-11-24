@@ -2,20 +2,56 @@
 
 set -euo pipefail
 
-source "${LUVER_SRC}/bin/command/_utils.sh"
+function luver_list_lua_version() {
+  local tool="${1}"
 
-function luver_list() {
+  if test -d "${LUVER_DIR}/${tool}-versions"; then
+    local version_dir version
+
+    for version_dir in ${LUVER_DIR}/${tool}-versions/*; do
+      version="$(basename "${version_dir}")"
+
+      if test "${version}" = "*"; then
+        continue
+      fi
+
+      echo "${version}"
+    done
+  fi
+}
+
+function luver_list_lua_aliasmap() {
+  local -r tool="${1}"
+
+  if test -d "${LUVER_DIR}/${tool}-aliases"; then
+    local alias_dir alias version
+
+    for alias_dir in ${LUVER_DIR}/${tool}-aliases/*; do
+      alias="$(basename "${alias_dir}")"
+
+      if test "${alias}" = "*"; then
+        continue
+      fi
+
+      version="$(basename $(realpath "${alias_dir}"))"
+
+      echo "${alias}:${version}"
+    done
+  fi
+}
+
+function luver_list_lua() {
   local -A map
 
-  local current_version="$(${LUVER_SRC}/bin/command/current)"
+  local current_version="$(${LUVER_SRC}/bin/command/current lua)"
 
   local version
-  for version in $(luver_list_version); do
+  for version in $(luver_list_lua_version lua); do
     map[${version}]=""
   done
 
   local aliasmap alias
-  for aliasmap in $(luver_list_aliasmap); do
+  for aliasmap in $(luver_list_lua_aliasmap lua); do
     alias="$(echo ${aliasmap} | cut -d: -f1)"
     version="$(echo ${aliasmap} | cut -d: -f2)"
     map[${version}]="${map[${version}]} ${alias}"
@@ -31,6 +67,16 @@ function luver_list() {
 
     mark=""
   done
+}
+
+function luver_list() {
+  local tool="${1:-"lua"}"
+  if [[ " lua luarocks " != *" ${tool} "* ]]; then
+    echo "unsupported tool: ${tool}"
+    exit 1
+  fi
+
+  luver_list_${tool}
 }
 
 luver_list $@
