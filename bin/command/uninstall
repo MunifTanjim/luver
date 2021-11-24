@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+source ${LUVER_SRC}/bin/command/util/fetch_archive
+source ${LUVER_SRC}/bin/command/util/parse_version
+
 function luver_uninstall_lua() {
   local target_version="${1}"
 
@@ -23,6 +26,45 @@ function luver_uninstall_lua() {
       fi
     done
   fi
+}
+
+function luver_uninstall_luarocks() {
+  local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local target_version="$(${LUVER_SRC}/bin/command/current luarocks)"
+
+  if test -z "${target_version}"; then
+    echo "luarocks is currently not installed"
+    exit 1
+  fi
+
+  local major minor patch prerelease
+  parse_version "${target_version}"
+
+  local -r temp_dir="$(mktemp --directory /tmp/luver-luarocks-${target_version}--XXXXXXXXX)"
+
+  pushd "${temp_dir}"
+
+  local -r archive_url="https://luarocks.github.io/luarocks/releases/luarocks-${target_version}.tar.gz"
+  local -r archive_name="$(basename "${archive_url}")"
+
+  fetch_archive "${archive_url}"
+
+  tar --strip-components=1 -xzf "${archive_name}"
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  ./configure --prefix="${installation_dir}" --with-lua="${installation_dir}"
+  make uninstall
+
+  popd
+
+  rm -rf "${temp_dir}"
 }
 
 function luver_uninstall() {

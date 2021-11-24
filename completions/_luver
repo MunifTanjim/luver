@@ -200,7 +200,7 @@ __luver_arguments() {
 
       _arguments \
         '1: :->tool' \
-        '2: :->version' \
+        '2:: :->version' \
         && ret=0
 
       case "${state}" in
@@ -215,6 +215,15 @@ __luver_arguments() {
 
               _describe -t versions "${words[2]} versions" versions \
                  && ret=0
+              ;;
+            luarocks)
+              local -r version="$(luver current luarocks)"
+
+              if test -z "${version}"; then
+                _message "luarocks is currently not installed" && ret=0
+              else
+                _message "hit enter to uninstall luarocks v${version}" && ret=0
+              fi
               ;;
           esac
           ;;
