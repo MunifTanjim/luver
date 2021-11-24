@@ -28,6 +28,42 @@ function luver_uninstall_lua() {
   fi
 }
 
+function luver_uninstall_luajit() {
+  local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local target_version="$(${LUVER_SRC}/bin/command/current luajit)"
+
+  if test -z "${target_version}"; then
+    echo "luajit is currently not installed"
+    exit 1
+  fi
+
+  local major minor patch prerelease
+  parse_version "${target_version}"
+
+  pushd "${LUVER_DIR}/.downloads/luajit"
+
+  local -r git_tag="v${target_version}"
+
+  if test -z "$(git tag --list "${git_tag}")"; then
+    echo "invalid version: ${target_version}"
+    exit 1
+  fi
+
+  git checkout "${git_tag}"
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  make PREFIX="${installation_dir}" uninstall
+
+  popd
+}
+
 function luver_uninstall_luarocks() {
   local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
 
@@ -69,7 +105,7 @@ function luver_uninstall_luarocks() {
 
 function luver_uninstall() {
   local tool="lua"
-  if [[ " lua luarocks " = *" ${1:-} "* ]]; then
+  if [[ " lua luajit luarocks " = *" ${1:-} "* ]]; then
     tool="${1}"
     shift
   fi
