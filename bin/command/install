@@ -2,12 +2,20 @@
 
 set -euo pipefail
 
-source "${LUVER_SRC}/bin/command/_utils.sh"
+function luver_get_platform_target() {
+  local -r os=$(uname -s)
 
-function luver_install() {
+  if [[ "${os}" = "Darwin" ]]; then
+    echo "macosx"
+  elif [[ "${os}" = "Linux" ]]; then
+    echo "linux"
+  fi
+}
+
+function parse_version() {
   local -r version="${1}"
 
-  local major="0" minor="0" patch="0"
+  major="0" minor="0" patch="0"
   major="$(echo ${version} | cut -d. -f1)"
   if test "${major}" != "${version}"; then
     minor="$(echo ${version} | cut -d. -f2)"
@@ -15,13 +23,20 @@ function luver_install() {
       patch="$(echo ${version} | cut -d. -f3)"
     fi
   fi
+}
+
+function luver_install_lua() {
+  local -r version="${1}"
+
+  local major minor patch
+  parse_version "${version}"
 
   if test "${major}" -le 2; then
     echo "Unsupported version: ${version}"
     exit 1
   fi
 
-  local -r archive_url="$(luver_get_lua_archive_url "${version}")"
+  local -r archive_url="https://www.lua.org/ftp/lua-${version}.tar.gz"
   local -r archive_name="$(basename "${archive_url}")"
 
   local -r temp_dir="$(mktemp --directory /tmp/luver-lua-${version}--XXXXXXXXX)"
@@ -29,6 +44,12 @@ function luver_install() {
   pushd "${temp_dir}"
 
   curl --progress-bar --continue-at - --output "${archive_name}" -L "${archive_url}"
+
+  local -r archive_path="${LUVER_DIR}/.downloads/${archive_name}"
+  if ! test -d "$(dirname "${archive_path}")"; then
+    mkdir -p $(dirname "${archive_path}")
+  fi
+  cp "${archive_name}" "${archive_path}"
 
   tar -xzf "${archive_name}"
 
@@ -73,6 +94,16 @@ function luver_install() {
   popd
 
   rm -rf "${temp_dir}"
+}
+
+function luver_install() {
+  local tool="lua"
+  if [[ " lua luarocks " = *" ${1:-} "* ]]; then
+    tool="${1}"
+    shift
+  fi
+
+  luver_install_${tool} $@
 }
 
 luver_install $@
