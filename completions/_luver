@@ -37,6 +37,20 @@ __luver_install_versions() {
       _describe -t versions "${words[2]} versions" _luver_lua_versions \
          && ret=0
       ;;
+
+    luarocks)
+      local cachename="_luver_luarocks_versions"
+
+      if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
+        && ! _retrieve_cache "${cachename#_}"; then
+          _message "fetching luarocks versions..."
+          _luver_luarocks_versions=( $(luver list-remote luarocks) )
+          _store_cache ${cachename#_} _luver_luarocks_versions
+      fi
+
+      _describe -t versions "${words[2]} versions" _luver_luarocks_versions \
+         && ret=0
+      ;;
   esac
 
   return ret

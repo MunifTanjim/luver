@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+function fetch_archive() {
+  local -r url="${1}"
+  local -r name="$(basename "${url}")"
+
+  local -r cache_path="${LUVER_DIR}/.downloads/${name}"
+  curl --progress-bar --continue-at - --output "${cache_path}" -L "${url}"
+
+  cp "${cache_path}" "${name}"
+
+  echo "${name}"
+}

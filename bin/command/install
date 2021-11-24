@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+source ${LUVER_SRC}/bin/command/util/fetch_archive
+source ${LUVER_SRC}/bin/command/util/parse_version
+
 function luver_get_platform_target() {
   local -r os=$(uname -s)
 
@@ -12,23 +15,10 @@ function luver_get_platform_target() {
   fi
 }
 
-function parse_version() {
-  local -r version="${1}"
-
-  major="0" minor="0" patch="0"
-  major="$(echo ${version} | cut -d. -f1)"
-  if test "${major}" != "${version}"; then
-    minor="$(echo ${version} | cut -d. -f2)"
-    if test "${major}.${minor}" != "${version}"; then
-      patch="$(echo ${version} | cut -d. -f3)"
-    fi
-  fi
-}
-
 function luver_install_lua() {
   local -r version="${1}"
 
-  local major minor patch
+  local major minor patch prerelease
   parse_version "${version}"
 
   if test "${major}" -le 2; then
@@ -43,23 +33,11 @@ function luver_install_lua() {
 
   pushd "${temp_dir}"
 
-  curl --progress-bar --continue-at - --output "${archive_name}" -L "${archive_url}"
+  fetch_archive "${archive_url}"
 
-  local -r archive_path="${LUVER_DIR}/.downloads/${archive_name}"
-  if ! test -d "$(dirname "${archive_path}")"; then
-    mkdir -p $(dirname "${archive_path}")
-  fi
-  cp "${archive_name}" "${archive_path}"
-
-  tar -xzf "${archive_name}"
+  tar --strip-components=1 -xzf "${archive_name}"
 
   local -r installation_dir="${LUVER_DIR}/lua-versions/${version}/installation"
-
-  if test "${major}" -eq 3; then
-    pushd "lua"
-  else
-    pushd "lua-${version}"
-  fi
 
   if test "${major}" -eq 3; then
     make
@@ -88,8 +66,52 @@ function luver_install_lua() {
     make INSTALL_TOP="${installation_dir}" "${platform_target}" install
   fi
 
-
   popd
+
+  rm -rf "${temp_dir}"
+}
+
+function luver_install_luarocks() {
+  local -r version="${1}"
+
+  local major minor patch prerelease
+  parse_version "${version}"
+
+  local current_lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${current_lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local current_luarocks_version="$(${LUVER_SRC}/bin/command/current luarocks)"
+
+  if ! test -z "${current_luarocks_version}"; then
+    echo "luarocks v${current_luarocks_version} is already installed, uninstall it first."
+    exit 1
+  fi
+
+  if test "${major}" -lt 3 || (test "${minor}" -eq 0 && test "${patch}" -lt 1); then
+    echo "unsupported version: ${version}"
+    exit 1
+  fi
+
+  local -r temp_dir="$(mktemp --directory /tmp/luver-luarocks-${version}--XXXXXXXXX)"
+
+  pushd "${temp_dir}"
+
+  local -r archive_url="https://luarocks.github.io/luarocks/releases/luarocks-${version}.tar.gz"
+  local -r archive_name="$(basename "${archive_url}")"
+
+  fetch_archive "${archive_url}"
+
+  tar --strip-components=1 -xzf "${archive_name}"
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${current_lua_version}/installation"
+
+  ./configure --prefix="${installation_dir}" --with-lua="${installation_dir}"
+  make
+  make install
 
   popd
 
