@@ -155,6 +155,7 @@ function luver_help() {
 
   local -r tools_section="TOOLS:
   lua
+  luajit
   luarocks"
 
   local command="${1:-}"
