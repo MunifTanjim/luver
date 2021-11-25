@@ -83,6 +83,80 @@ luver completion zsh > _luver
 And then put that file in one of the directories in the `$fpath` variable
 (run `echo "${(j.\n.)fpath}"` to list the current `$fpath` directories).
 
+## Command Usage
+
+Run `luver help` to get started.
+
+### Lua
+
+**Install a Lua version**:
+
+```sh
+luver install lua 5.1.5
+```
+
+**Create a Lua version alias**:
+
+```sh
+luver alias 5.4.3 latest
+# default version
+luver alias 5.1.5 default
+```
+
+Lua version set to `default` alias is used automatically when you open a new shell.
+
+**Use a specific Lua version (or alias)**:
+
+```sh
+# version
+luver use 5.3.6
+
+# alias
+luver use latest
+```
+
+**Get currently used Lua version**:
+
+```sh
+luver current lua
+```
+
+**List currently installed Lua versions**:
+
+```sh
+luver list lua
+```
+
+**Uninstall a Lua version**:
+
+```sh
+luver uninstall lua 5.3.6
+```
+
+### LuaJIT
+
+If your currently used Lua is at least `v5`, you can install LuaJIT alongside it:
+
+```sh
+# released version
+luver install luajit 2.0.5
+
+# latest git version
+luver install luajit 2.1.0-git
+```
+
+The other commands are similar to Lua.
+
+### LuaRocks
+
+You can install LuaRocks for you currently used Lua version:
+
+```sh
+luver install luarocks 3.8.0
+```
+
+The other commands are similar to Lua.
+
 ## License
 
 Licensed under the MIT License. Check the [LICENSE](./LICENSE) file for details.
