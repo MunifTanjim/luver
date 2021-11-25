@@ -70,6 +70,19 @@ fi
 source "${LUVER_DIR}/self/luver.plugin.zsh"
 ```
 
+#### Shell Completion
+
+`luver` comes with awesome shell completion for Zsh.
+
+To generate shell completion file `_luver`, you need to run:
+
+```
+luver completion zsh > _luver
+```
+
+And then put that file in one of the directories in the `$fpath` variable
+(run `echo "${(j.\n.)fpath}"` to list the current `$fpath` directories).
+
 ## License
 
 Licensed under the MIT License. Check the [LICENSE](./LICENSE) file for details.
