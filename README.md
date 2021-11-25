@@ -1,6 +1,6 @@
 # luver
 
-Version manage for Lua with :heart:
+Version manager for Lua with :heart:
 
 
 ## Installation
