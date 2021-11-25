@@ -46,7 +46,12 @@ function luver_uninstall_luajit() {
   local major minor patch prerelease
   parse_version "${target_version}"
 
-  pushd "${LUVER_DIR}/.downloads/luajit"
+  local -r downloads_dir="${LUVER_DIR}/.downloads"
+  if ! test -d "${downloads_dir}"; then
+    mkdir -p "${downloads_dir}"
+  fi
+
+  pushd "${downloads_dir}/luajit"
 
   local git_ref="v${target_version}"
   local is_git_ref_branch=false

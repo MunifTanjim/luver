@@ -4,10 +4,14 @@ function fetch_archive() {
   local -r url="${1}"
   local -r name="$(basename "${url}")"
 
-  local -r cache_path="${LUVER_DIR}/.downloads/${name}"
-  curl --progress-bar --continue-at - --output "${cache_path}" -L "${url}"
+  local -r downloads_dir="${LUVER_DIR}/.downloads"
+  if ! test -d "${downloads_dir}"; then
+    mkdir -p "${downloads_dir}"
+  fi
 
-  cp "${cache_path}" "${name}"
+  curl --progress-bar --continue-at - --output "${downloads_dir}/${name}" -L "${url}"
+
+  cp "${downloads_dir}/${name}" "${name}"
 
   echo "${name}"
 }
