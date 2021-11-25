@@ -13,9 +13,20 @@ USAGE:
 COMMANDS:
 EOF
 
-for command in ${commands[@]}; do
-  printf "  %-12s  %s\n" "${command}" "${short_desc[${command}]}"
-done
+  for command in ${commands[@]}; do
+    printf "  %-12s  %s\n" "${command}" "${short_desc[${command}]}"
+  done
+
+  cat << EOF
+
+LEARN MORE:
+  Run 'luver help <command>' for more information about a command.
+
+FEEDBACK:
+  Open an issue on GitHub: https://github.com/MunifTanjim/luver/issues 
+
+EOF
+
 }
 
 function _luver_help_alias() {
@@ -142,16 +153,16 @@ function luver_help() {
   )
 
   local -A short_desc
-  short_desc[alias]="Create a version alias"
+  short_desc[alias]="Create a Lua version alias"
   short_desc[completion]="Generate shell completion code"
   short_desc[current]="Get the current version"
   short_desc[help]="Get usage information"
   short_desc[install]="Install a new version"
   short_desc[list]="List installed versions"
   short_desc[list-remote]="List all remote versions"
-  short_desc[unalias]="Remove a version alias"
+  short_desc[unalias]="Remove a Lua version alias"
   short_desc[uninstall]="Uninstall a version"
-  short_desc[use]="Change current version"
+  short_desc[use]="Change current Lua version"
 
   local -r tools_section="TOOLS:
   lua
