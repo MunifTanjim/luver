@@ -9,7 +9,7 @@ function luver_list-remote_luajit() {
   if test -d "${repo_path}"; then
     git -C "${repo_path}" fetch --quiet origin
   else
-    git clone --silent "${git_repo}" "${repo_path}"
+    git clone --quiet "${git_repo}" "${repo_path}"
   fi
 
   pushd "${repo_path}" >/dev/null
