@@ -10,5 +10,5 @@ elif test -d ${LUVER_DIR}/lua-aliases/${version}; then
   ln -s ${LUVER_DIR}/lua-aliases/${version}/installation ${LUVER_CURRENT_DIR}
 else
   echo "lua v${version} not found!"
-  return 1
+  exit 1
 fi
