@@ -2,7 +2,9 @@
 
 declare -r version="${1}"
 
-if test -d ${LUVER_DIR}/lua-versions/${version}; then
+if test "${version}" = "system"; then
+  rm -f ${LUVER_CURRENT_DIR}
+elif test -d ${LUVER_DIR}/lua-versions/${version}; then
   rm -f ${LUVER_CURRENT_DIR}
   ln -s ${LUVER_DIR}/lua-versions/${version}/installation ${LUVER_CURRENT_DIR}
 elif test -d ${LUVER_DIR}/lua-aliases/${version}; then

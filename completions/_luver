@@ -251,7 +251,7 @@ __luver_arguments() {
           aliases=("${LUVER_DIR}/lua-aliases"/*(N:t))
 
           local -a versions
-          versions=("${LUVER_DIR}/lua-versions"/*(N:t))
+          versions=("${LUVER_DIR}/lua-versions"/*(N:t) "system")
 
           _alternative \
             "aliases:${words[2]} aliases:compadd -a - aliases" \
