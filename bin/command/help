@@ -46,6 +46,7 @@ USAGE:
   luver completion [shell]
 
 SHELLS:
+  fish
   zsh
 EOF
 }

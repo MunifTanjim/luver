@@ -98,7 +98,7 @@ __luver_arguments() {
       case "${state}" in
         shell)
           local -a shells
-          shells=("zsh")
+          shells=($(luver help completion | sed '1,/SHELLS:/d' | sed '/^$/,$d' | sed 's/^  //'))
 
           _describe -t luver-completion-shells "shells" shells \
              && ret=0
