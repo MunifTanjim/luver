@@ -42,13 +42,13 @@ source "${LUVER_DIR}/self/luver.bash"
 
 #### Shell Completion
 
-`luver` comes with awesome shell completion for Bash.
+`luver` comes with shell completion script for Bash.
 
 Make sure you have `"bash-completion"` package installed on your system.
 
-To generate the shell completion file and store it, you can run:
+To generate the shell completion script and store it, run:
 
-```
+```sh
 luver completion bash | tee "${XDG_DATA_HOME:-"${HOME}/.local/share"}/bash-completion/completions/luver"
 ```
 
@@ -64,13 +64,13 @@ fisher install MunifTanjim/luver
 
 #### Shell Completion
 
-`luver` comes with awesome shell completion for Fish.
+`luver` comes with shell completion script for Fish.
 
 If you installed it using _fisher_, you don't need to do anything else.
 
-To generate the shell completion file and store it, you can run:
+To generate the shell completion script and store it, run:
 
-```
+```sh
 luver completion fish | tee $__fish_config_dir/completions/luver.fish
 ```
 
@@ -106,16 +106,20 @@ source "${LUVER_DIR}/self/luver.plugin.zsh"
 
 #### Shell Completion
 
-`luver` comes with awesome shell completion for Zsh.
+`luver` comes with shell completion script for Zsh.
 
-To generate shell completion file `_luver`, you need to run:
+To generate the shell completion script `_luver`, run:
 
-```
+```sh
 luver completion zsh > _luver
 ```
 
-And then put that file in one of the directories in the `$fpath` variable
-(run `echo "${(j.\n.)fpath}"` to list the current `$fpath` directories).
+Then store the `_luver` file in one of the directories present in `$fpath` variable:
+
+```sh
+# print the list of fpath directories
+echo ${(j.\n.)fpath}
+```
 
 ## Command Usage
 
