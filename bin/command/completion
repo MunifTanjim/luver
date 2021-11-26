@@ -11,6 +11,9 @@ function luver_completion() {
   fi
 
   case "${shell}" in
+    bash)
+      cat "${LUVER_SRC}/completions/luver.bash"
+      ;;
     fish)
       cat "${LUVER_SRC}/completions/luver.fish"
       ;;
