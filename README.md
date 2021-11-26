@@ -40,6 +40,16 @@ fi
 source "${LUVER_DIR}/self/luver.bash"
 ```
 
+### Fish
+
+#### Using Plugin Manger
+
+**Using [fisher](https://github.com/jorgebucaran/fisher)**:
+
+```sh
+fisher install MunifTanjim/luver
+```
+
 ### Zsh
 
 #### Using Plugin Manager (recommended)
