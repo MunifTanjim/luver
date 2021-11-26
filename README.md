@@ -40,6 +40,18 @@ fi
 source "${LUVER_DIR}/self/luver.bash"
 ```
 
+#### Shell Completion
+
+`luver` comes with awesome shell completion for Bash.
+
+Make sure you have `"bash-completion"` package installed on your system.
+
+To generate the shell completion file and store it, you can run:
+
+```
+luver completion bash | tee "${XDG_DATA_HOME:-"${HOME}/.local/share"}/bash-completion/completions/luver"
+```
+
 ### Fish
 
 #### Using Plugin Manger (recommended)
