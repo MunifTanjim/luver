@@ -42,12 +42,24 @@ source "${LUVER_DIR}/self/luver.bash"
 
 ### Fish
 
-#### Using Plugin Manger
+#### Using Plugin Manger (recommended)
 
 **Using [fisher](https://github.com/jorgebucaran/fisher)**:
 
 ```sh
 fisher install MunifTanjim/luver
+```
+
+#### Shell Completion
+
+`luver` comes with awesome shell completion for Fish.
+
+If you installed it using _fisher_, you don't need to do anything else.
+
+To generate the shell completion file and store it, you can run:
+
+```
+luver completion fish | tee $__fish_config_dir/completions/luver.fish
 ```
 
 ### Zsh
