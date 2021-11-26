@@ -17,7 +17,9 @@ function _luver_on_pull
     git clone --quiet --depth 1 https://github.com/MunifTanjim/luver.git $LUVER_SRC
   end
 
-  rm -f $__fish_config_dir/completions/_luver
+  for file in (echo $LUVER_SRC/completions/* | xargs -n1 basename | grep -v '.fish')
+    rm -f $__fish_config_dir/completions/$file
+  end
 end
 
 function _luver_on_install --on-event luver_install
