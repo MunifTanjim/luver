@@ -21,3 +21,5 @@ run_test() {
 
 run_test 'bash' entrypoint/bash.sh
 run_test 'zsh' entrypoint/zsh.sh
+
+run_test 'bash' luver/basic.sh
