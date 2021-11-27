@@ -102,7 +102,15 @@ function luver_install_luajit() {
     mkdir -p "${downloads_dir}"
   fi
 
-  pushd "${downloads_dir}/luajit"
+  local -r git_repo="https://github.com/LuaJIT/LuaJIT.git"
+  local -r repo_path="${downloads_dir}/luajit"
+  if test -d "${repo_path}"; then
+    git -C "${repo_path}" fetch --quiet origin
+  else
+    git clone --quiet "${git_repo}" "${repo_path}"
+  fi
+
+  pushd "${repo_path}"
 
   local git_ref="v${version}"
   local is_git_ref_branch=false
