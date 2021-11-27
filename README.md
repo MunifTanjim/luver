@@ -195,6 +195,12 @@ luver install luarocks 3.8.0
 
 The other commands are similar to Lua.
 
+## GitHub Action
+
+You can also use Luver in GitHub Actions workflow!
+
+Check: [MunifTanjim/luver-action](https://github.com/MunifTanjim/luver-action)
+
 ## License
 
 Licensed under the MIT License. Check the [LICENSE](./LICENSE) file for details.
