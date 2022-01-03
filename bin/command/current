@@ -4,6 +4,9 @@ set -euo pipefail
 
 source ${LUVER_SRC}/bin/command/util/extract_luajit_version
 source ${LUVER_SRC}/bin/command/util/extract_luarocks_version
+source ${LUVER_SRC}/bin/command/util/extract_luvi_version
+source ${LUVER_SRC}/bin/command/util/extract_luvit_version
+source ${LUVER_SRC}/bin/command/util/extract_lit_version
 
 function luver_current_lua() {
   if ! test -d "${LUVER_CURRENT_DIR}"; then
@@ -27,9 +30,24 @@ function luver_current_luarocks() {
   extract_luarocks_version "${lua_version}"
 }
 
+function luver_current_luvi() {
+  local -r lua_version="$(luver_current_lua)"
+  extract_luvi_version "${lua_version}" "luvi"
+}
+
+function luver_current_luvit() {
+  local -r lua_version="$(luver_current_lua)"
+  extract_luvit_version "${lua_version}" "luvit"
+}
+
+function luver_current_lit() {
+  local -r lua_version="$(luver_current_lua)"
+  extract_lit_version "${lua_version}" "lit"
+}
+
 function luver_current() {
   local tool="${1:-"lua"}"
-  if [[ " lua luajit luarocks " != *" ${tool} "* ]]; then
+  if [[ " lua luajit luarocks luvi luvit lit " != *" ${tool} "* ]]; then
     echo "unsupported tool: ${tool}"
     exit 1
   fi
