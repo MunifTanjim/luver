@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+function extract_luvi_version() {
+  local -r lua_version="${1}"
+  local -r bin_name="${2:-"luvi"}"
+
+  if test -z "${lua_version}"; then
+    exit 1
+  fi
+
+  local -r bin="${LUVER_DIR}/lua-versions/${lua_version}/installation/bin/${bin_name}"
+  if ! test -f "${bin}"; then
+    exit 1
+  fi
+
+  ${bin} --version | head -1 | sed -n "s/.*v\(.*\..*\)/\1/p"
+}
