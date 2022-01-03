@@ -8,7 +8,7 @@ __luver_caching_policy() {
 
 __luver_tools() {
   local -a _luver_tools
-  _luver_tools=("lua" "luajit" "luarocks")
+  _luver_tools=("lua" "luajit" "luarocks" "luvi" "luvit" "lit")
   _describe -t tools "tools" _luver_tools
 }
 
@@ -20,7 +20,7 @@ __luver_install_versions() {
   fi
 
   if ! zstyle -t ":completion:${curcontext%:*:*}:*:versions" sort; then
-    zstyle ":completion:${curcontext%:*:*}:*:versions" sort reverse
+    zstyle ":completion:${curcontext%:*:*}:*:versions" sort false
   fi
 
   case "${words[2]}" in
@@ -30,7 +30,7 @@ __luver_install_versions() {
       if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
         && ! _retrieve_cache "${cachename#_}"; then
           _message "fetching lua versions..."
-          _luver_lua_versions=( $(luver list-remote lua) )
+          _luver_lua_versions=( $(luver list-remote lua | tac) )
           _store_cache ${cachename#_} _luver_lua_versions
       fi
 
@@ -40,7 +40,7 @@ __luver_install_versions() {
 
     luajit)
       local -a _luver_luajit_versions
-      _luver_luajit_versions=( $(luver list-remote luajit) )
+      _luver_luajit_versions=( $(luver list-remote luajit | tac) )
 
       _describe -t versions "${words[2]} versions" _luver_luajit_versions \
          && ret=0
@@ -52,11 +52,53 @@ __luver_install_versions() {
       if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
         && ! _retrieve_cache "${cachename#_}"; then
           _message "fetching luarocks versions..."
-          _luver_luarocks_versions=( $(luver list-remote luarocks) )
+          _luver_luarocks_versions=( $(luver list-remote luarocks | tac) )
           _store_cache ${cachename#_} _luver_luarocks_versions
       fi
 
       _describe -t versions "${words[2]} versions" _luver_luarocks_versions \
+         && ret=0
+      ;;
+
+    luvi)
+      local cachename="_luver_luvi_versions"
+
+      if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
+        && ! _retrieve_cache "${cachename#_}"; then
+          _message "fetching luvi versions..."
+          _luver_luvi_versions=( $(luver list-remote luvi | tac) )
+          _store_cache ${cachename#_} _luver_luvi_versions
+      fi
+
+      _describe -t versions "${words[2]} versions" _luver_luvi_versions \
+         && ret=0
+      ;;
+
+    luvit)
+      local cachename="_luver_luvit_versions"
+
+      if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
+        && ! _retrieve_cache "${cachename#_}"; then
+          _message "fetching luvit versions..."
+          _luver_luvit_versions=( $(luver list-remote luvit | tac) )
+          _store_cache ${cachename#_} _luver_luvit_versions
+      fi
+
+      _describe -t versions "${words[2]} versions" _luver_luvit_versions \
+         && ret=0
+      ;;
+
+    lit)
+      local cachename="_luver_lit_versions"
+
+      if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid "${cachename#_}" ) \
+        && ! _retrieve_cache "${cachename#_}"; then
+          _message "fetching lit versions..."
+          _luver_lit_versions=( $(luver list-remote lit | tac) )
+          _store_cache ${cachename#_} _luver_lit_versions
+      fi
+
+      _describe -t versions "${words[2]} versions" _luver_lit_versions \
          && ret=0
       ;;
   esac
