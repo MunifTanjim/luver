@@ -121,9 +121,48 @@ function luver_uninstall_luarocks() {
   rm -rf "${temp_dir}"
 }
 
+function luver_uninstall_luvi() {
+  local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  rm -f "${installation_dir}/bin/luvi"
+}
+
+function luver_uninstall_luvit() {
+  local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  rm -f "${installation_dir}/bin/luvit"
+}
+
+function luver_uninstall_lit() {
+  local lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  rm -f "${installation_dir}/bin/lit"
+}
+
 function luver_uninstall() {
   local tool="lua"
-  if [[ " lua luajit luarocks " = *" ${1:-} "* ]]; then
+  if [[ " lua luajit luarocks luvi luvit lit " = *" ${1:-} "* ]]; then
     tool="${1}"
     shift
   fi
