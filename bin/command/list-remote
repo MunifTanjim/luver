@@ -31,7 +31,7 @@ function luver_list-remote_luajit() {
 
 function luver_list-remote() {
   local tool="${1:-"lua"}"
-  if [[ " lua luajit luarocks " != *" ${tool} "* ]]; then
+  if [[ " lua luajit luarocks luvi luvit lit " != *" ${tool} "* ]]; then
     echo "unsupported tool: ${tool}"
     exit 1
   fi
@@ -48,6 +48,24 @@ function luver_list-remote() {
       ;;
     luarocks)
       local -ar versions=($(curl -fSsL http://luarocks.github.io/luarocks/releases | sed -n "s/.*>luarocks-\(.*\..*\).tar.gz<.*/\1/p" | sort))
+      for version in ${versions[@]}; do
+        echo "${version}"
+      done
+      ;;
+    luvi)
+      local -ar versions=($(curl -s https://api.github.com/repos/luvit/luvi/tags?per_page=100 | sed -n 's/^ *"name":.*"v\(.*\..*\)",/\1/p' | tac))
+      for version in ${versions[@]}; do
+        echo "${version}"
+      done
+      ;;
+    luvit)
+      local -ar versions=($(curl -s https://api.github.com/repos/luvit/luvit/tags?per_page=100 | grep -v '"name": "v' | sed -n 's/^ *"name":.*"\(.*\..*\)",/\1/p' | tac))
+      for version in ${versions[@]}; do
+        echo "${version}"
+      done
+      ;;
+    lit)
+      local -ar versions=($(curl -s https://api.github.com/repos/luvit/lit/tags?per_page=100 | sed -n 's/^ *"name":.*"\(.*\..*\)",/\1/p' | tac))
       for version in ${versions[@]}; do
         echo "${version}"
       done
