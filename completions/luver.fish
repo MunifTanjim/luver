@@ -25,7 +25,7 @@ function __luver_install_versions
     luver list-remote $tool > $cache_filename
   end
 
-  cat $cache_filename | sort -r
+  cat $cache_filename | tac
 end
 
 set -l commands (luver help help | sed '1,/COMMANDS:/d' | sed '/^$/,$d' | sed 's/^  //')
@@ -54,6 +54,9 @@ complete -c luver -n "$match 'install'" -x -a (string join ' ' $tools)
 complete -c luver -n "$match 'install lua'" -f -k -a "(__luver_install_versions lua)"
 complete -c luver -n "$match 'install luajit'" -f -k -a "(__luver_install_versions luajit)"
 complete -c luver -n "$match 'install luarocks'" -f -k -a "(__luver_install_versions luarocks)"
+complete -c luver -n "$match 'install luvi'" -f -k -a "(__luver_install_versions luvi)"
+complete -c luver -n "$match 'install luvit'" -f -k -a "(__luver_install_versions luvit)"
+complete -c luver -n "$match 'install lit'" -f -k -a "(__luver_install_versions lit)"
 complete -c luver -n "$match -r 'install .+ .+'" -f
 
 complete -c luver -n "$match 'list'" -x -a (string join ' ' $tools)
@@ -68,6 +71,7 @@ complete -c luver -n "$match -r 'unalias .+'" -f
 complete -c luver -n "__luver_arguments_match 'uninstall'" -x -a (string join ' ' $tools)
 complete -c luver -n "__luver_arguments_match 'uninstall lua'" -x -a "(echo $LUVER_DIR/lua-versions/* | xargs -n1 basename)"
 complete -c luver -n "__luver_arguments_match -r 'uninstall lua(jit|rocks)'" -f
+complete -c luver -n "__luver_arguments_match -r 'uninstall l(uvi|uvit|it)'" -f
 
 complete -c luver -n "$match 'use'" -x -a "(echo $LUVER_DIR/lua-{aliases,versions}/* | xargs -n1 basename)"
 complete -c luver -n "$match -r 'use .+'" -f
