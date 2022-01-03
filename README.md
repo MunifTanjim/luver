@@ -7,6 +7,9 @@ Luver supports:
 - [Lua](https://github.com/lua/lua)
 - [LuaJIT](https://github.com/LuaJIT/LuaJIT)
 - [LuaRocks](https://github.com/luarocks/luarocks)
+- [luvi](https://github.com/luvit/luvi)
+- [luvit](https://github.com/luvit/luvit)
+- [lit](https://github.com/luvit/lit)
 
 ## Installation
 
