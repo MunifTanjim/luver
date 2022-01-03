@@ -198,9 +198,123 @@ function luver_install_luarocks() {
   rm -rf "${temp_dir}"
 }
 
+function luver_install_luvi() {
+  local -r version="${1}"
+
+  local current_lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${current_lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local -r arch="$(uname -s)_$(uname -m)"
+
+  local -r temp_dir="$(mktemp --directory /tmp/luver-luvi-${version}--XXXXXXXXX)"
+
+  pushd "${temp_dir}"
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${current_lua_version}/installation"
+
+  for type in regular tiny; do
+    local bin_url="https://github.com/luvit/luvi/releases/download/v${version}/luvi-${type}-${arch}"
+    local bin_name="luvi-${type}-${version}"
+
+    fetch_file "${bin_url}" "${bin_name}"
+
+    chmod u+x "${bin_name}"
+
+    cp "${bin_name}" "${installation_dir}/bin/${bin_name}"
+
+    ln -sf "${installation_dir}/bin/${bin_name}" "${installation_dir}/bin/luvi-${type}"
+  done
+
+  ln -sf "${installation_dir}/bin/luvi-regular" "${installation_dir}/bin/luvi"
+
+  popd
+
+  rm -rf "${temp_dir}"
+}
+
+function luver_install_luvit() {
+  local -r version="${1}"
+
+  local current_lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${current_lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local current_lit_version="$(${LUVER_SRC}/bin/command/current lit)"
+
+  if test -z "${current_lit_version}"; then
+    echo "no lit version is currently in use"
+    exit 1
+  fi
+
+  local -r temp_dir="$(mktemp --directory /tmp/luver-luvit-${version}--XXXXXXXXX)"
+
+  pushd "${temp_dir}"
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${current_lua_version}/installation"
+
+  lit make github://luvit/luvit@${version}
+
+  cp luvit "${installation_dir}/bin/luvit-${version}"
+
+  ln -sf "${installation_dir}/bin/luvit-${version}" "${installation_dir}/bin/luvit"
+
+  popd
+
+  rm -rf "${temp_dir}"
+
+}
+
+function luver_install_lit() {
+  local -r version="${1}"
+
+  local current_lua_version="$(${LUVER_SRC}/bin/command/current lua)"
+
+  if test -z "${current_lua_version}"; then
+    echo "no lua version is currently in use"
+    exit 1
+  fi
+
+  local current_luvi_version="$(${LUVER_SRC}/bin/command/current luvi)"
+
+  if test -z "${current_luvi_version}"; then
+    echo "no luvi version is currently in use"
+    exit 1
+  fi
+
+  local luvi="$(which luvi)"
+
+  local -r temp_dir="$(mktemp --directory /tmp/luver-lit-${version}--XXXXXXXXX)"
+
+  pushd "${temp_dir}"
+
+  local -r archive_url="https://lit.luvit.io/packages/luvit/lit/v${version}.zip"
+  local -r archive_name="lit-$(basename "${archive_url}")"
+
+  fetch_file "${archive_url}" "${archive_name}"
+
+  ${luvi} ${archive_name} -- make ${archive_name} lit ${luvi}
+
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${current_lua_version}/installation"
+
+  cp lit "${installation_dir}/bin/lit-${version}"
+
+  ln -sf "${installation_dir}/bin/lit-${version}" "${installation_dir}/bin/lit"
+
+  popd
+
+  rm -rf "${temp_dir}"
+}
+
 function luver_install() {
   local tool="lua"
-  if [[ " lua luajit luarocks " = *" ${1:-} "* ]]; then
+  if [[ " lua luajit luarocks luvi luvit lit " = *" ${1:-} "* ]]; then
     tool="${1}"
     shift
   fi
