@@ -4,6 +4,9 @@ set -euo pipefail
 
 source ${LUVER_SRC}/bin/command/util/extract_luajit_version
 source ${LUVER_SRC}/bin/command/util/extract_luarocks_version
+source ${LUVER_SRC}/bin/command/util/extract_luvi_version
+source ${LUVER_SRC}/bin/command/util/extract_luvit_version
+source ${LUVER_SRC}/bin/command/util/extract_lit_version
 
 function luver_list_lua_version() {
   local tool="${1}"
@@ -120,9 +123,111 @@ function luver_list_luarocks() {
   done
 }
 
+function luver_list_luvi() {
+  local -A map
+
+  local current_version="$(${LUVER_SRC}/bin/command/current luvi)"
+
+  local bin_name
+  for lua_version in $(luver_list_lua_version lua); do
+    local -A seen_version
+
+    for bin_path in ${LUVER_DIR}/lua-versions/${lua_version}/installation/bin/luvi-*; do
+      bin_name="$(basename "${bin_path}")"
+
+      if test "${bin_name}" = "luvi-*"; then
+        continue
+      fi
+
+      local version="$(extract_luvi_version "${lua_version}" "${bin_name}")"
+      if ! test -z "${version}" && test -z "${seen_version[${version}]:-}"; then
+        seen_version[${version}]="true"
+        map[${version}]="${map[${version}]:+${map[${version}]}, }${lua_version}"
+      fi
+    done
+  done
+
+  local mark=""
+  for version in $(printf '%s\n' ${!map[@]} | sort); do
+    if test "${version}" = "${current_version}"; then
+      mark=" *"
+    fi
+
+    echo "${version} [lua: ${map[${version}]}]${mark}"
+
+    mark=""
+  done
+}
+
+function luver_list_luvit() {
+  local -A map
+
+  local current_version="$(${LUVER_SRC}/bin/command/current luvit)"
+
+  local bin_name
+  for lua_version in $(luver_list_lua_version lua); do
+    for bin_path in ${LUVER_DIR}/lua-versions/${lua_version}/installation/bin/luvit-*; do
+      bin_name="$(basename "${bin_path}")"
+
+      if test "${bin_name}" = "luvit-*"; then
+        continue
+      fi
+
+      local version="$(extract_luvit_version "${lua_version}" "${bin_name}")"
+      if ! test -z "${version}"; then
+        map[${version}]="${map[${version}]:+${map[${version}]}, }${lua_version}"
+      fi
+    done
+  done
+
+  local mark=""
+  for version in $(printf '%s\n' ${!map[@]} | sort); do
+    if test "${version}" = "${current_version}"; then
+      mark=" *"
+    fi
+
+    echo "${version} [lua: ${map[${version}]}]${mark}"
+
+    mark=""
+  done
+}
+
+function luver_list_lit() {
+  local -A map
+
+  local current_version="$(${LUVER_SRC}/bin/command/current lit)"
+
+  local bin_name
+  for lua_version in $(luver_list_lua_version lua); do
+    for bin_path in ${LUVER_DIR}/lua-versions/${lua_version}/installation/bin/lit-*; do
+      bin_name="$(basename "${bin_path}")"
+
+      if test "${bin_name}" = "lit-*"; then
+        continue
+      fi
+
+      local version="$(extract_lit_version "${lua_version}" "${bin_name}")"
+      if ! test -z "${version}"; then
+        map[${version}]="${map[${version}]:+${map[${version}]}, }${lua_version}"
+      fi
+    done
+  done
+
+  local mark=""
+  for version in $(printf '%s\n' ${!map[@]} | sort); do
+    if test "${version}" = "${current_version}"; then
+      mark=" *"
+    fi
+
+    echo "${version} [lua: ${map[${version}]}]${mark}"
+
+    mark=""
+  done
+}
+
 function luver_list() {
   local tool="${1:-"lua"}"
-  if [[ " lua luajit luarocks " != *" ${tool} "* ]]; then
+  if [[ " lua luajit luarocks luvi luvit lit " != *" ${tool} "* ]]; then
     echo "unsupported tool: ${tool}"
     exit 1
   fi
