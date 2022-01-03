@@ -21,7 +21,7 @@ _luver() {
       luver list-remote "${tool}" > "${cache_filename}"
     fi
 
-    COMPREPLY=( $(compgen -W "$(cat "${cache_filename}" | sort -r)" -- "${cur}" ) )
+    COMPREPLY=( $(compgen -W "$(cat "${cache_filename}" | tac)" -- "${cur}" ) )
   }
 
   for i in ${COMP_WORDS[@]}; do
@@ -87,7 +87,7 @@ _luver() {
 
       if [[ ${COMP_CWORD} -eq 3 ]] ; then
         case "${prev}" in
-          lua|luajit|luarocks)
+          lua|luajit|luarocks|luvi|luvit|lit)
             __luver_install_versions "${prev}"
             return 0
             ;;
