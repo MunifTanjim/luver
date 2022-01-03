@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+function fetch_file() {
+  local -r url="${1}"
+  local -r name="${2:-$(basename "${url}")}"
+
+  local -r downloads_dir="${LUVER_DIR}/.downloads"
+  if ! test -d "${downloads_dir}"; then
+    mkdir -p "${downloads_dir}"
+  fi
+
+  local -r file_path="${downloads_dir}/${name}"
+
+  local already_downloaded="false"
+  if test -f "${file_path}"; then
+    local -r expected_size="$(curl -fsSL -I "${url}" | grep -i "content-length" | tail -1 | cut -d' ' -f2 | tr -d '\r')"
+    local -r downloaded_size="$(stat -c "%s" "${file_path}")"
+
+    if test "${expected_size}" = "${downloaded_size}"; then
+      already_downloaded="true"
+    else
+      rm -f "${file_path}"
+    fi
+  fi
+
+  if test "${already_downloaded}" = "false"; then
+    curl -fL --progress-bar --output "${file_path}" "${url}"
+  fi
+
+  cp "${file_path}" "${name}"
+
+  echo "${name}"
+}
