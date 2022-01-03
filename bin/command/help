@@ -169,7 +169,10 @@ function luver_help() {
   local -r tools_section="TOOLS:
   lua
   luajit
-  luarocks"
+  luarocks
+  luvi
+  luvit
+  lit"
 
   local command="${1:-}"
 
