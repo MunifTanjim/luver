@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source ${LUVER_SRC}/bin/command/util/fetch_archive
+source ${LUVER_SRC}/bin/command/util/fetch_file
 source ${LUVER_SRC}/bin/command/util/parse_version
 
 function luver_uninstall_lua() {
@@ -107,7 +107,7 @@ function luver_uninstall_luarocks() {
   local -r archive_url="https://luarocks.github.io/luarocks/releases/luarocks-${target_version}.tar.gz"
   local -r archive_name="$(basename "${archive_url}")"
 
-  fetch_archive "${archive_url}"
+  fetch_file "${archive_url}"
 
   tar --strip-components=1 -xzf "${archive_name}"
 
