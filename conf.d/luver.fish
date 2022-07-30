@@ -2,7 +2,7 @@ set -q XDG_DATA_HOME || set -l XDG_DATA_HOME $HOME/.local/share
 set -q LUVER_DIR || set -gx LUVER_DIR $XDG_DATA_HOME/luver
 set -q LUVER_SRC || set -gx LUVER_SRC $XDG_DATA_HOME/luver/self
 
-set -gx LUVER_CURRENT_DIR (mktemp --dry-run /tmp/luver_current_{$fish_pid}_(date +%s)_XXX)
+set -gx LUVER_CURRENT_DIR (mktemp -u /tmp/luver_current_{$fish_pid}_(date +%s)_XXX)
 
 set -gxp PATH $LUVER_CURRENT_DIR/bin $LUVER_SRC/bin
 

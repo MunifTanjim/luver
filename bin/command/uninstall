@@ -100,7 +100,7 @@ function luver_uninstall_luarocks() {
   local major minor patch prerelease
   parse_version "${target_version}"
 
-  local -r temp_dir="$(mktemp --directory /tmp/luver-luarocks-${target_version}--XXXXXXXXX)"
+  local -r temp_dir="$(mktemp -d /tmp/luver-luarocks-${target_version}--XXXXXXXXX)"
 
   pushd "${temp_dir}"
 

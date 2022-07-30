@@ -29,7 +29,7 @@ function luver_install_lua() {
   local -r archive_url="https://www.lua.org/ftp/lua-${version}.tar.gz"
   local -r archive_name="$(basename "${archive_url}")"
 
-  local -r temp_dir="$(mktemp --directory /tmp/luver-lua-${version}--XXXXXXXXX)"
+  local -r temp_dir="$(mktemp -d /tmp/luver-lua-${version}--XXXXXXXXX)"
 
   pushd "${temp_dir}"
 
@@ -176,7 +176,7 @@ function luver_install_luarocks() {
     exit 1
   fi
 
-  local -r temp_dir="$(mktemp --directory /tmp/luver-luarocks-${version}--XXXXXXXXX)"
+  local -r temp_dir="$(mktemp -d /tmp/luver-luarocks-${version}--XXXXXXXXX)"
 
   pushd "${temp_dir}"
 
@@ -210,7 +210,7 @@ function luver_install_luvi() {
 
   local -r arch="$(uname -s)_$(uname -m)"
 
-  local -r temp_dir="$(mktemp --directory /tmp/luver-luvi-${version}--XXXXXXXXX)"
+  local -r temp_dir="$(mktemp -d /tmp/luver-luvi-${version}--XXXXXXXXX)"
 
   pushd "${temp_dir}"
 
@@ -253,7 +253,7 @@ function luver_install_luvit() {
     exit 1
   fi
 
-  local -r temp_dir="$(mktemp --directory /tmp/luver-luvit-${version}--XXXXXXXXX)"
+  local -r temp_dir="$(mktemp -d /tmp/luver-luvit-${version}--XXXXXXXXX)"
 
   pushd "${temp_dir}"
 
@@ -290,7 +290,7 @@ function luver_install_lit() {
 
   local luvi="$(which luvi)"
 
-  local -r temp_dir="$(mktemp --directory /tmp/luver-lit-${version}--XXXXXXXXX)"
+  local -r temp_dir="$(mktemp -d /tmp/luver-lit-${version}--XXXXXXXXX)"
 
   pushd "${temp_dir}"
 
