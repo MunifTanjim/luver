@@ -13,6 +13,10 @@ Luver supports:
 
 ## Installation
 
+**Requirements**:
+
+- Bash v4 or newer _(MacOS ships with older version by default)_.
+
 ### Git Clone
 
 ```sh
