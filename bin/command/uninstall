@@ -51,35 +51,40 @@ function luver_uninstall_luajit() {
     mkdir -p "${downloads_dir}"
   fi
 
+  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
+
+  # Resolve the actually-installed rolling build (luajit-<major>.<minor>.<relver>)
+  # so `make uninstall` removes the exact files, regardless of branch drift.
+  local -r installed_bin="$(basename "$(realpath "${installation_dir}/bin/luajit")")"
+  local -r relver="${installed_bin#luajit-${major}.${minor}.}"
+
+  # The strip must yield the bare numeric release version. If it no-ops (prefix
+  # mismatch) relver keeps the full name, which would make `make uninstall`
+  # target a nonexistent build and silently orphan the real binary.
+  if ! [[ "${relver}" =~ ^[0-9]+$ ]]; then
+    echo "could not determine installed luajit release version: ${installed_bin}"
+    exit 1
+  fi
+
   pushd "${downloads_dir}/luajit"
 
-  local git_ref="v${target_version}"
-  local is_git_ref_branch=false
-
-  if test "${prerelease}" = "-git"; then
-    git_ref="v${major}.${minor}"
-    is_git_ref_branch=true
-  fi
+  local -r git_ref="v${major}.${minor}"
 
   if ! git show-ref --quiet "${git_ref}"; then
     echo "invalid version: ${target_version}"
     exit 1
   fi
 
-  git fetch origin
+  git checkout --quiet "${git_ref}"
 
-  git checkout "${git_ref}"
+  # Pin the release version so `make uninstall` targets the installed build.
+  echo "${relver}" > src/luajit_relver.txt
 
-  local VERSION_OVERRIDE=""
-  if test ${is_git_ref_branch} = true; then
-    VERSION_OVERRIDE="PREREL=-git"
-  fi
-
-  local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
-
-  make ${VERSION_OVERRIDE} PREFIX="${installation_dir}" uninstall
+  make PREFIX="${installation_dir}" uninstall
 
   popd
+
+  rm -f "${installation_dir}/bin/luajit-${target_version}"
 }
 
 function luver_uninstall_luarocks() {

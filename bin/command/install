@@ -95,7 +95,6 @@ function luver_install_luajit() {
   fi
 
   local -r version="${1}"
-  parse_version "${version}"
 
   local -r downloads_dir="${LUVER_DIR}/.downloads"
   if ! test -d "${downloads_dir}"; then
@@ -105,36 +104,28 @@ function luver_install_luajit() {
   local -r git_repo="https://github.com/LuaJIT/LuaJIT.git"
   local -r repo_path="${downloads_dir}/luajit"
   if test -d "${repo_path}"; then
-    git -C "${repo_path}" fetch --quiet origin
+    git -C "${repo_path}" fetch --quiet --prune origin
   else
     git clone --quiet "${git_repo}" "${repo_path}"
   fi
 
   pushd "${repo_path}"
 
-  local git_ref="v${version}"
-  local is_git_ref_branch=false
+  # LuaJIT removed all tags and moved to rolling releases; a version is now
+  # just a release branch (e.g. 2.1 -> v2.1).
+  local -r git_ref="v${version}"
 
-  if test "${prerelease}" = "-git"; then
-    git_ref="v${major}.${minor}"
-    is_git_ref_branch=true
-  fi
-
-  if ! git show-ref --quiet "${git_ref}"; then
+  if ! git show-ref --verify --quiet "refs/remotes/origin/${git_ref}"; then
     echo "invalid version: ${version}"
     exit 1
   fi
 
-  git fetch origin
-
-  git checkout "${git_ref}"
+  # Build a pristine checkout of the branch tip. The release version is derived
+  # at build time from the latest commit, so stale artifacts must be removed.
+  git checkout --quiet -B "${git_ref}" "origin/${git_ref}"
+  git clean -qfdx
 
   local -r platform_target="$(luver_get_platform_target)"
-
-  local VERSION_OVERRIDE=""
-  if test ${is_git_ref_branch} = true; then
-    VERSION_OVERRIDE="PREREL=-git"
-  fi
 
   local MACOSX_DEPLOYMENT_TARGET=""
   if test "${platform_target}" = "macosx"; then
@@ -143,10 +134,16 @@ function luver_install_luajit() {
 
   local -r installation_dir="${LUVER_DIR}/lua-versions/${lua_version}/installation"
 
-  make ${VERSION_OVERRIDE} ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}"
-  make ${VERSION_OVERRIDE} ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}" install
+  make ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}"
+  make ${MACOSX_DEPLOYMENT_TARGET} PREFIX="${installation_dir}" install
 
-  ln -sf ${installation_dir}/bin/luajit-${version} ${installation_dir}/bin/luajit
+  # `make install` created bin/luajit-<major>.<minor>.<relver> and a bin/luajit
+  # symlink to it. Repoint luajit through a channel alias so `current`/`uninstall`
+  # track the branch (e.g. 2.1) instead of the build-specific rolling version.
+  local built_bin
+  built_bin="$(basename "$(readlink "${installation_dir}/bin/luajit")")"
+  ln -sf "${built_bin}" "${installation_dir}/bin/luajit-${version}"
+  ln -sf "luajit-${version}" "${installation_dir}/bin/luajit"
 
   popd
 }

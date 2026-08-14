@@ -14,7 +14,9 @@ function extract_luajit_version() {
 
   # ${luajit} -v | head -1 |  sed 's/.* \(\([0-9]\.\)\{1,2\}\([0-9]\)\{0,1\}\(-[a-z0-9]*\)\{0,2\}\).*/\1/'
 
-  local version="$(basename "$(realpath "${luajit}")")"
+  # The luajit symlink points at a channel alias (luajit-<major>.<minor>) rather
+  # than the build-specific luajit-<major>.<minor>.<relver>, so read one level.
+  local version="$(basename "$(readlink "${luajit}")")"
   version="${version#luajit-}"
 
   echo "${version}"
