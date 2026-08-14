@@ -183,11 +183,8 @@ luver uninstall lua 5.3.6
 If your currently used Lua is at least `v5`, you can install LuaJIT alongside it:
 
 ```sh
-# released version
-luver install luajit 2.0.5
-
-# latest git version
-luver install luajit 2.1.0-git
+# LuaJIT uses rolling releases; install the latest of a version branch
+luver install luajit 2.1
 ```
 
 The other commands are similar to Lua.

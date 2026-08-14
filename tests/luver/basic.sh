@@ -54,8 +54,8 @@ should_pass 'luver install lua 5.3.0'
 should_pass 'luver use 5.3.0'
 should_pass 'test "$(luver current lua)" = "5.3.0"'
 
-should_pass 'luver install luajit 2.1.0-git'
-should_pass 'test "$(luver current luajit)" = "2.1.0-git"'
+should_pass 'luver install luajit 2.1'
+should_pass 'test "$(luver current luajit)" = "2.1"'
 
 should_pass 'luver alias 5.3.0 default'
 
