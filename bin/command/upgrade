@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function luver_upgrade() {
+  if ! test -d "${LUVER_SRC}/.git"; then
+    echo "luver was not installed via git clone; cannot self-upgrade"
+    echo "source: ${LUVER_SRC}"
+    exit 1
+  fi
+
+  echo "upgrading luver..."
+
+  git -C "${LUVER_SRC}" pull --quiet https://github.com/MunifTanjim/luver.git
+
+  echo "luver is up to date"
+  echo "restart your shell or re-source the entrypoint to apply changes"
+}
+
+luver_upgrade $@

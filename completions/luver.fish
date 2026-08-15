@@ -73,5 +73,7 @@ complete -c luver -n "__luver_arguments_match 'uninstall lua'" -x -a "(echo $LUV
 complete -c luver -n "__luver_arguments_match -r 'uninstall lua(jit|rocks)'" -f
 complete -c luver -n "__luver_arguments_match -r 'uninstall l(uvi|uvit|it)'" -f
 
+complete -c luver -n "$match -r 'upgrade'" -f
+
 complete -c luver -n "$match 'use'" -x -a "(echo $LUVER_DIR/lua-{aliases,versions}/* | xargs -n1 basename)"
 complete -c luver -n "$match -r 'use .+'" -f

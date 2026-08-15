@@ -280,6 +280,10 @@ __luver_arguments() {
       esac
       ;;
 
+    upgrade)
+      _message "no arguments" && ret=0
+      ;;
+
     use)
       local curcontext="${curcontext}" state
 

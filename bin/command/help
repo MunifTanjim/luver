@@ -131,6 +131,15 @@ ${tools_section}
 EOF
 }
 
+function _luver_help_upgrade() {
+  cat << EOF
+${short_desc[upgrade]}
+
+USAGE:
+  luver upgrade
+EOF
+}
+
 function _luver_help_use() {
   cat << EOF
 ${short_desc[use]}
@@ -151,6 +160,7 @@ function luver_help() {
     list-remote
     unalias
     uninstall
+    upgrade
     use
   )
 
@@ -164,6 +174,7 @@ function luver_help() {
   short_desc[list-remote]="List all remote versions"
   short_desc[unalias]="Remove a Lua version alias"
   short_desc[uninstall]="Uninstall a version"
+  short_desc[upgrade]="Upgrade luver itself"
   short_desc[use]="Change current Lua version"
 
   local -r tools_section="TOOLS:

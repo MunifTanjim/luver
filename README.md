@@ -199,6 +199,20 @@ luver install luarocks 3.8.0
 
 The other commands are similar to Lua.
 
+### Self Upgrade
+
+If you installed `luver` via [Git Clone](#git-clone) (Bash/Zsh manual
+installation), you can upgrade it to the latest version:
+
+```sh
+luver upgrade
+```
+
+Restart your shell or re-source the entrypoint afterwards to apply the changes.
+
+> For plugin manager installations (_fisher_ for Fish, _zed_ for Zsh), use the
+> plugin manager's own update mechanism instead.
+
 ## GitHub Action
 
 You can also use Luver in GitHub Actions workflow!
