@@ -9,12 +9,12 @@ on:
 jobs:
   test:
     name: test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install Zsh
-        run: sudo apt-get update; sudo apt-get install zsh
+        uses: actions/checkout@v7
+      - name: Install Dependencies
+        run: sudo apt-get update; sudo apt-get install -y zsh libreadline-dev
       - name: Get Luver Downloads Cache Key
         id: luver-downloads-cache-key
         env:
@@ -24,7 +24,7 @@ jobs:
         shell: bash
       - name: Setup Luver Downloads Cache
         id: luver-downloads-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v6
         with:
           path: tests/.temp/home/.local/share/luver/.downloads
           key: ${{ steps.luver-downloads-cache-key.outputs.value }}
